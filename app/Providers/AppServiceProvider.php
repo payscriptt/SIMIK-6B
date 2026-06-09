@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <-- Tambahan baris ini
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Memaksa semua asset (CSS/JS) menggunakan HTTPS saat di server production (Railway)
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
