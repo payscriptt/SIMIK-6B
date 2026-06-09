@@ -11,14 +11,25 @@
     <link rel="stylesheet" href="{{ asset('css/sidebar_toggle.css') }}">
 </head>
 <body>
-    <div class="topbar">
-        <div class="logo">
-            <button class="sidebar-toggle-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-            <i class="fa-solid fa-shapes"></i> Logo Perusahaan
+     <div class="topbar">
+         <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+            <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <img src="{{ asset('JVS.png') }}" alt="Logo JVS" style="height: 50px; width: auto; object-fit: contain;">
         </div>
-        <div class="user-menu">
-            <i class="fa-solid fa-circle-user" style="font-size: 20px;"></i> User
-            <a href="#" style="margin-left: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> LogOut</a>
+        <div class="user-menu" style="display: flex; align-items: center;">
+            <i class="fa-solid fa-circle-user" style="font-size: 20px;"></i> 
+            <span style="margin-left: 5px; margin-right: 20px;">
+                {{ Auth::guard('admin')->check() ? Auth::guard('admin')->user()->username : 'Guest' }}
+            </span>
+
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; font: inherit; padding: 0;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> LogOut
+                </button>
+            </form>
         </div>
     </div>
 
@@ -48,39 +59,46 @@
             </div>
         </div>
         
-        <div class="content">
-            <div class="form-card">
-                <h3 class="form-title">Supplier</h3>
-                
-                <form action="#" method="POST" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                    @csrf
-                    
-                    <div class="form-group">
-                        <label>Nama Supplier</label>
-                        <input type="text" name="nama_supplier" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>NO Telepon</label>
-                        <input type="text" name="no_telepon" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Alamat</label>
-                        <input type="text" name="alamat" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>ID Supplier</label>
-                        <input type="text" name="id_supplier" required>
-                    </div>
-                    
-                    <button type="submit" class="btn-submit">SUBMIT</button>
-                </form>
+        <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 85vh; padding: 20px;">
+    
+    <div class="form-card" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center;">
+        <h3 class="form-title" style="text-align: center; margin-bottom: 20px;">Supplier</h3>
+        
+        @if($errors->any())
+            <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; width: 100%; box-sizing: border-box;">
+                {{ $errors->first() }}
             </div>
-        </div>
+        @endif
+        
+        <form action="{{ url('/supplier') }}" method="POST" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            @csrf
+            
+            <div class="form-group" style="width: 100%; margin-bottom: 15px; display: flex; flex-direction: column;">
+                <label style="margin-bottom: 5px; text-align: left;">Nama Supplier</label>
+                <input type="text" name="nama_supplier" value="{{ old('nama_supplier') }}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+            
+            <div class="form-group" style="width: 100%; margin-bottom: 15px; display: flex; flex-direction: column;">
+                <label style="margin-bottom: 5px; text-align: left;">NO Telepon</label>
+                <input type="text" name="no_telepon" value="{{ old('no_telepon') }}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+            
+            <div class="form-group" style="width: 100%; margin-bottom: 15px; display: flex; flex-direction: column;">
+                <label style="margin-bottom: 5px; text-align: left;">Alamat</label>
+                <input type="text" name="alamat" value="{{ old('alamat') }}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+            
+            <div class="form-group" style="width: 100%; margin-bottom: 20px; display: flex; flex-direction: column;">
+                <label style="margin-bottom: 5px; text-align: left;">ID Supplier</label>
+                <input type="text" name="id_supplier" value="{{ old('id_supplier') }}" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+            </div>
+            
+            <button type="submit" class="btn-submit" style="width: 100%; padding: 10px;">SUBMIT</button>
+        </form>
     </div>
-
+</div>
+    </div>
+</div>
     <script>
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('collapsed');

@@ -4,28 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - SIMIK</title>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sidebar_toggle.css') }}">
 </head>
 <body>
-    <!-- TOPBAR -->
     <div class="topbar">
-        <div class="logo">
-            <button class="sidebar-toggle-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-            <i class="fa-solid fa-shapes"></i> Logo Perusahaan
-        </div>
-        <div class="user-menu">
-            <i class="fa-solid fa-circle-user" style="font-size: 20px;"></i> User
-            <a href="#" style="margin-left: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> LogOut</a>
+         <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    
+    <img src="{{ asset('JVS.png') }}" alt="Logo JVS" style="height: 50px; width: auto; object-fit: contain;">
+    
+</div>
+       <div class="user-menu" style="display: flex; align-items: center;">
+            <i class="fa-solid fa-circle-user" style="font-size: 20px;"></i> 
+            <span style="margin-left: 5px; margin-right: 20px;">
+                {{ Auth::guard('admin')->check() ? Auth::guard('admin')->user()->username : 'Guest' }}
+            </span>
+
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; font: inherit; padding: 0;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> LogOut
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- MAIN CONTAINER -->
     <div class="container">
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="menu-section">
                 <h4><i class="fa-solid fa-house"></i> Dashboard</h4>
@@ -51,9 +59,7 @@
             </div>
         </div>
 
-        <!-- CONTENT -->
         <div class="content">
-            <!-- WELCOME HEADER -->
             <div class="welcome-banner">
                 <i class="fa-solid fa-house welcome-icon"></i>
                 <div class="welcome-text">
@@ -62,14 +68,12 @@
                 </div>
             </div>
 
-            <!-- CARDS GRID SECTION -->
             <div class="cards-grid">
                 
-                <!-- Card Barang Masuk -->
                 <div class="stat-card card-masuk">
                     <i class="fa-solid fa-arrow-turn-down bg-icon"></i>
                     <div class="card-content">
-                        <h1>{{ $total_barang_masuk ?? 0 }}</h1>
+                        <h1 id="stat-barang-masuk">{{ $total_barang_masuk ?? 0 }}</h1>
                         <p>Barang<br>Masuk</p>
                     </div>
                     <div class="card-footer">
@@ -77,11 +81,10 @@
                     </div>
                 </div>
 
-                <!-- Card Supplier -->
                 <div class="stat-card card-supplier">
                     <i class="fa-solid fa-cart-flatbed bg-icon"></i>
                     <div class="card-content">
-                        <h1>{{ $total_supplier ?? 0 }}</h1>
+                        <h1 id="stat-supplier">{{ $total_supplier ?? 0 }}</h1>
                         <p>Supplier</p>
                     </div>
                     <div class="card-footer">
@@ -89,11 +92,10 @@
                     </div>
                 </div>
 
-                <!-- Card Total Barang -->
                 <div class="stat-card card-total">
                     <i class="fa-solid fa-folder bg-icon"></i>
                     <div class="card-content">
-                        <h1>{{ $total_barang ?? 0 }}</h1>
+                        <h1 id="stat-total-barang">{{ $total_barang ?? 0 }}</h1>
                         <p>Total<br>Barang</p>
                     </div>
                     <div class="card-footer">
@@ -101,11 +103,10 @@
                     </div>
                 </div>
 
-                <!-- Card Barang Keluar -->
                 <div class="stat-card card-keluar">
                     <i class="fa-solid fa-arrow-turn-up bg-icon"></i>
                     <div class="card-content">
-                        <h1>{{ $total_barang_keluar ?? 0 }}</h1>
+                        <h1 id="stat-barang-keluar">{{ $total_barang_keluar ?? 0 }}</h1>
                         <p>Barang<br>Keluar</p>
                     </div>
                     <div class="card-footer">
@@ -114,39 +115,37 @@
                 </div>
                 
             </div>
-
-            <!-- PROFILE BOX (Read Only style) -->
-            <div class="profile-section">
-                <div class="profile-grid">
-                    <div class="profile-item">
-                        <label>Nama</label>
-                        <div class="profile-item-box">Rifqi Hakim</div>
-                    </div>
-                    
-                    <div class="profile-item">
-                        <label>Username</label>
-                        <div class="profile-item-box">rifqi</div>
-                    </div>
-                    
-                    <div class="profile-item">
-                        <label>Hak Akses</label>
-                        <div class="profile-item-box">Admin</div>
-                    </div>
-                    
-                    <div class="profile-item">
-                        <label>ID Admin</label>
-                        <div class="profile-item-box">2303015098</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <script>
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-        }
-    </script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+    }
+
+    // Fungsi AJAX Fetch untuk mengambil data realtime dari Controller
+    function updateDashboardStats() {
+        fetch("{{ url('/api/dashboard-stats') }}")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil data statistik");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Menyuntikkan angka dari database ke komponen HTML secara realtime
+                document.getElementById('stat-barang-masuk').innerText = data.total_barang_masuk;
+                document.getElementById('stat-supplier').innerText = data.total_supplier;
+                document.getElementById('stat-total-barang').innerText = data.total_barang;
+                document.getElementById('stat-barang-keluar').innerText = data.total_barang_keluar;
+            })
+            .catch(error => console.error('Error realtime polling:', error));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+     
+        setInterval(updateDashboardStats, 1000);
+    });
+</script>
 </body>
 </html>

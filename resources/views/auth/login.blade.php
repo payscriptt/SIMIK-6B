@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
-<link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 
 <body>
 
 <div class="left">
-    Logo Perusahaan
+    <img src="JVS.png" alt="Logo JVS" style="width: 500px; height: auto; vertical-align: middle; margin-right: 10px;">
 </div>
 
 <div class="right">
 
-    <div class="login-box">
-        <h4>Masuk</h4>
+    <form action="{{ url('/login') }}" method="POST" class="login-box">
+        @csrf <h4>Masuk</h4>
 
-        <input type="text" placeholder="Admin">
-        <input type="text" placeholder="Username">
-        <input type="password" placeholder="Password">
+        @if ($errors->any())
+            <div style="color: red; margin-bottom: 15px; font-size: 14px;">
+                {{ $errors->first() }}
+            </div>
+        @endif
 
-    </div>
+        <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
+        <input type="password" name="password" placeholder="Password" required>
 
-    <button class="btn-login">Login</button>
-
-    <button class="btn-register">Register</button>
+      <button type="submit" class="btn-login" style="padding: 6px 20px; font-size: 14px; width: auto;">Login</button>
+    </form>
 
 </div>
 
